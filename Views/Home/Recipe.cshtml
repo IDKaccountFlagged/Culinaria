@@ -1,0 +1,44 @@
+﻿@model Culinaria.Models.Recipe
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+
+
+
+<div class="container-fluid">
+    <h1>@Html.DisplayFor(model => Model.Title)</h1>
+    @*upper body of recipe*@
+    <div class="row">
+        <div class="col">
+            @Html.DisplayFor(model => Model.Image)
+        </div>
+        <div class="col">
+            @Html.DisplayFor(model => Model.Description)
+        </div>
+    </div>
+    @*lower body of recipe*@
+    <div class="row">
+        <div class="col">
+            <h3>Ingredientes</h3>
+            <ul>
+                @foreach (var item in Model.Ingredients)
+                {
+                    <li>@Html.DisplayFor(modelItem => item.Name)</li>
+                }
+
+            </ul>
+            
+        </div>
+        <div class="col">
+            <h3>Preparação</h3>
+            <p>@Html.DisplayFor(model => Model.Prep)</p>
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Delete"  asp-route-id="@Model.Id">Delete</a>
+</div>

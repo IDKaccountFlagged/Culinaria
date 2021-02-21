@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Culinaria", "Culinaria.csproj", "{64A9F75D-5087-4FC8-B54A-02DAE1A1FEB9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Culinaria", "Culinaria.csproj", "{64A9F75D-5087-4FC8-B54A-02DAE1A1FEB9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

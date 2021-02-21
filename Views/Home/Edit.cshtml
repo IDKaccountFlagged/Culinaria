@@ -1,0 +1,197 @@
+﻿@model Culinaria.Models.Recipe
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+@{ var counter = 0;}
+
+<h1>Edit</h1>
+
+<h4>Recipe</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form id="editRecipe">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <input type="hidden" asp-for="Id" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Time" class="control-label"></label>
+                <input asp-for="Time" class="form-control" />
+                <span asp-validation-for="Time" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Quantity" class="control-label"></label>
+                <input asp-for="Quantity" class="form-control" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Prep" class="control-label"></label>
+                <input asp-for="Prep" class="form-control" />
+                <span asp-validation-for="Prep" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Image" class="control-label"></label>
+                <input asp-for="Image" class="form-control" />
+                <span asp-validation-for="Image" class="text-danger"></span>
+            </div>
+            <button class="add-new-ingredient" data-toggle="modal" data-target="#ingModal">+</button>
+            <div id="ingredients">
+
+                @foreach (var item in Model.Ingredients)
+                {
+                    var final = "ingredient" + counter;
+                    <div class="form-group" id="@final">
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <input type="hidden" name="RecipeId" value="@item.RecipeId" />
+                        <input type="text" name="name" class="form-control" value="@item.Name" />
+                        <button class="delete-ingredient" data-target="@final" data-id="@item.Id">delete</button>
+                    </div>
+                    counter++;
+                }
+            </div>
+
+
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+
+<div class="modal fade" id="ingModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Adicionar Ingrediente a @Model.Title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="https://localhost:44328/api/Ingredients" method="post" id="addIngredient">
+                    <label class="control-label" for="ingName">Nome:</label>
+                    <input class="form-control" type="text" name="name" id="ingName" value="" />
+                    <input type="hidden" name="recipeId" value="@Model.Id" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                <button type="submit" class="btn btn-primary" form="addIngredient">Adicionar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+<script>
+
+        $(document).on('click', '.delete-ingredient', function (e) {
+            e.preventDefault();
+            const id = $(this).data("id");
+            console.log($(this).data("id"));
+
+            fetch('https://localhost:44328/api/ingredients/' + id, {
+                method: 'DELETE'
+            }).then(
+                $("#" + $(this).data("target")).remove())
+            .catch(error => console.error('Unable to delete item.', error))
+
+
+        });
+
+        $("#addIngredient").submit(function (e) {
+            e.preventDefault();
+            const data = new FormData(e.target);
+
+            const formJson = Object.fromEntries(data.entries());
+
+
+            console.log(formJson);
+            fetch('https://localhost:44328/api/ingredients', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formJson)
+            }).then(response => response.text())
+                .then(text => {
+                    try {
+                        const data = JSON.parse(text);
+                        $('#ingredients').append(
+                            '<div class="form-group" id="ingredient'+@counter+'">'+
+                                    '<input type="hidden" name="id" value="'+data.id+'" />'+
+                                    '<input type="hidden" name="RecipeId" value="'+data.recipeId+'" />'+
+                                    '<input type="text" class="form-control" value="'+data.name+'" />'+
+                                    '<button class="delete-ingredient" data-target="ingredient'+@counter+'" data-id="">delete</button>' +
+                            '</div>'
+                        );
+                        @(counter++)
+                        $("#ingModal").modal('toggle')
+                    } catch (err) {
+                        // It is text, do you text handling here
+                    }
+                });
+        })
+
+    $("#editRecipe").submit(function (e) {
+        e.preventDefault();
+        const data = new FormData(e.target);
+        //clearing ingredients data, since they're in not usable state
+        data.delete('id');
+        data.delete('RecipeId');
+        data.delete('name');
+
+        const formJson = Object.fromEntries(data.entries());
+        var ingredients = [];
+
+        //getting ingredients data, in a usable format
+        //only one class delete-ingredient exists per ingredient, that stores the div id
+        $('.delete-ingredient').each(function () {
+            var divId = $(this).data('target');
+            var ingData = {}
+            //getting all ingredient data from inputs using the div id
+            $("#" + divId + " input").each(function () {
+                ingData[$(this).attr('name')] = $(this).val();
+            })
+            ingredients.push(ingData);
+        })
+
+        //adding ingredients data to formJson
+        formJson.ingredients = ingredients;
+
+        console.log(formJson);
+
+        fetch('https://localhost:44328/api/recipes/' + formJson.Id, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formJson)
+        })
+            .catch(error => console.error('Unable to update item.', error));
+
+    })
+</script>
+}

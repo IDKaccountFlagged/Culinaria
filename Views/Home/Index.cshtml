@@ -1,8 +1,85 @@
-﻿@{
+﻿@model IEnumerable<Culinaria.Models.Recipe>
+@{
     ViewData["Title"] = "Home Page";
 }
+<a asp-action="Create">Create</a>
+<div class="row" id="content">
+    @foreach (var item in Model)
+    {
+    <div class="col-lg-3">
+        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+        <a asp-action="Recipe" asp-route-id="@item.Id" class="card-recipe">
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+            <div class="card-recipe-image">
+                <img src="item.Image" alt=@Html.DisplayFor(modelItem => item.Title)>
+            </div>
+            <h2>@Html.DisplayFor(modelItem => item.Title)</h2>
+            <div class="time">@Html.DisplayFor(modelItem => item.Time)</div>
+
+        </a>
+    </div>
+    }
+
 </div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Ingredients)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Time)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Prep)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Image)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Ingredients)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Time)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Prep)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Image)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Recipe" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
