@@ -10,21 +10,27 @@ using System.Net;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Culinaria.Areas.Identity.Data;
 
 namespace Culinaria.Controllers
 {
     public class HomeController : Controller
     {
-        private Uri baseAdress = new Uri("https://localhost:44328/api/recipes");
+        private readonly Uri baseAdress = new Uri("https://localhost:44328/api/recipes");
 
         private readonly ILogger<HomeController> _logger;
+        private readonly UserManager<CulinariaUser> _userManager;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(UserManager<CulinariaUser> userManager, ILogger<HomeController> logger)
         {
             _logger = logger;
+            _userManager = userManager;
 
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> IndexAsync(string? searchBar)
         {
             List<Recipe> list = null;
@@ -50,7 +56,7 @@ namespace Culinaria.Controllers
             return View(list);
         }
 
-
+        [AllowAnonymous]
         public async Task<IActionResult> Recipe(int id)
         {
             Recipe recipe = null;
@@ -82,9 +88,10 @@ namespace Culinaria.Controllers
             return View(recipe);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> CreateAsync()
         {
-            
+            var user = await _userManager.GetUserAsync(User);
+            ViewBag.userId = user.Id;
             return View();
         }
 
@@ -121,21 +128,21 @@ namespace Culinaria.Controllers
                 HttpResponseMessage response = await client.GetAsync(client.BaseAddress + "/" + id);
                 if (response.IsSuccessStatusCode)
                 {
-                    //var resp = response.Content.ReadAsStringAsync();
-                    //resp.Wait();
-                    //recipe = JsonConvert.DeserializeObject<Recipe>(resp.Result);
-                    //recipe = await response.Content.ReadAsAsync<Recipe>();
                     var responseDoc = response.Content.ReadAsStringAsync().Result;
                     recipe = JsonConvert.DeserializeObject<Recipe>(responseDoc);
                 }
             }
 
+            var user = await _userManager.GetUserAsync(User);
             if (recipe == null)
             {
                 return NotFound();
             }
 
-
+            if (!(user.Id == recipe.OwnerId) )
+            {
+                return Forbid();
+            }
 
             return View(recipe);
         }
