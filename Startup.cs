@@ -23,7 +23,10 @@ namespace Culinaria
         {
             services.AddControllersWithViews();
 
-            services.AddRazorPages();
+            services.ConfigureApplicationCookie(option => {
+                option.AccessDeniedPath = "/Auth/AccessDenied";
+                option.LoginPath = "/Auth/Login";
+            });
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -90,7 +93,6 @@ namespace Culinaria
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapRazorPages();
             });
         }
     }

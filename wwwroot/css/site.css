@@ -76,20 +76,42 @@ body {
     -------------------------------------------------------------------------
 */
 
+.row {
+    margin-top: 0.5rem;
+}
+
 .card-recipe {
     display: block;
     margin: 0 auto 30px auto;
     border: 1px solid #999;
     box-sizing: border-box;
     text-decoration: none !important;
+    color: black;
+}
+
+.card-recipe *{
+    text-align: center;
 }
 
 .card-recipe-image {
     position: relative;
     overflow: hidden;
-    height: auto;
+}
+
+.card-recipe-image img{
+    width:20rem;
 }
 
 a.card-recipe:hover {
-    color: black;
+    color: dimgrey;
+}
+
+#prep {
+    white-space: pre;
+    overflow-wrap:break-word;
+}
+
+.my-recipe-img {
+    width: 10rem;
+    height: 10rem;
 }

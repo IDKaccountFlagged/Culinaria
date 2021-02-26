@@ -1,26 +1,31 @@
 ﻿@model Culinaria.Models.Recipe
+@using Microsoft.AspNetCore.Identity
+
+@inject UserManager<Culinaria.Areas.Identity.Data.CulinariaUser> userManager
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = Model.Title;
 }
 
-
-
+@if (@ViewBag.StatusMessage != null)
+{
+    <div class="alert alert-success alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        @ViewBag.StatusMessage
+    </div>  }
 
 <div class="container-fluid">
     <h1>@Html.DisplayFor(model => Model.Title)</h1>
     @*upper body of recipe*@
     <div class="row">
-        <div class="col">
-            @Html.DisplayFor(model => Model.Image)
-        </div>
-        <div class="col">
-            @Html.DisplayFor(model => Model.Description)
-        </div>
+        <img src="@Model.Image" alt=@Html.DisplayFor(model => model.Title)>
+    </div>
+    <div class="text-center">
+        @Html.DisplayFor(model => Model.Description)
     </div>
     @*lower body of recipe*@
     <div class="row">
-        <div class="col">
+        <div class="col-6">
             <h3>Ingredientes</h3>
             <ul>
                 @foreach (var item in Model.Ingredients)
@@ -29,16 +34,21 @@
                 }
 
             </ul>
-            
+
         </div>
-        <div class="col">
+        <div class="col-6">
             <h3>Preparação</h3>
-            <p>@Html.DisplayFor(model => Model.Prep)</p>
+            <p id="prep">@Html.DisplayFor(model => Model.Prep)</p>
         </div>
     </div>
+    <div>Feito por: @Model.OwnerName</div>
 </div>
 
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Delete"  asp-route-id="@Model.Id">Delete</a>
-</div>
+
+@if (User.Identity.IsAuthenticated & userManager.GetUserId(User) == Model.OwnerId)
+{
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.Id">Editar</a> |
+        <a asp-action="Delete" asp-route-id="@Model.Id">Eliminar</a>
+    </div>
+}

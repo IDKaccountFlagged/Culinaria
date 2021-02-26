@@ -1,4 +1,6 @@
 ﻿@model Culinaria.Models.Recipe
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<Culinaria.Areas.Identity.Data.CulinariaUser> userManager
 
 @{
     ViewData["Title"] = "Edit";
@@ -10,70 +12,66 @@
 
 <h4>Recipe</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form id="editRecipe">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <input type="hidden" asp-for="Id" class="form-control" />
-            </div>
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Time" class="control-label"></label>
-                <input asp-for="Time" class="form-control" />
-                <span asp-validation-for="Time" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Quantity" class="control-label"></label>
-                <input asp-for="Quantity" class="form-control" />
-                <span asp-validation-for="Quantity" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Prep" class="control-label"></label>
-                <input asp-for="Prep" class="form-control" />
-                <span asp-validation-for="Prep" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Image" class="control-label"></label>
-                <input asp-for="Image" class="form-control" />
-                <span asp-validation-for="Image" class="text-danger"></span>
-            </div>
-            <button class="add-new-ingredient" data-toggle="modal" data-target="#ingModal">+</button>
-            <div id="ingredients">
 
-                @foreach (var item in Model.Ingredients)
-                {
-                    var final = "ingredient" + counter;
-                    <div class="form-group" id="@final">
-                        <input type="hidden" name="id" value="@item.Id" />
-                        <input type="hidden" name="RecipeId" value="@item.RecipeId" />
-                        <input type="text" name="name" class="form-control" value="@item.Name" />
-                        <button class="delete-ingredient" data-target="@final" data-id="@item.Id">delete</button>
-                    </div>
-                    counter++;
-                }
-            </div>
+<div >
+    <form id="editRecipe">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <input type="hidden" asp-for="Id" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="Title" class="control-label">Titulo</label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Description" class="control-label">Descrição</label>
+            <textarea asp-for="Description" class="form-control" >@Model.Description</textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Time" class="control-label">Tempo de Preparação</label>
+            <input asp-for="Time" class="form-control" />
+            <span asp-validation-for="Time" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Quantity" class="control-label">Número de pessoas</label>
+            <input asp-for="Quantity" class="form-control" />
+            <span asp-validation-for="Quantity" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Prep" class="control-label">Preparação</label>
+            <textarea asp-for="Prep" class="form-control" >@Model.Prep</textarea>
+            <span asp-validation-for="Prep" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Image" class="control-label">Imagem</label>
+            <input asp-for="Image" class="form-control" />
+            <span asp-validation-for="Image" class="text-danger"></span>
+        </div>
+        <button class="add-new-ingredient" data-toggle="modal" data-target="#ingModal">+</button>
+        <div id="ingredients">
+            <h4>Ingredientes</h4>
+            @foreach (var item in Model.Ingredients)
+            {
+                var final = "ingredient" + counter;
+                <div class="form-group" id="@final">
+                    <input type="hidden" name="id" value="@item.Id" />
+                    <input type="hidden" name="RecipeId" value="@item.RecipeId" />
+                    <input type="text" name="name" class="form-control" value="@item.Name" />
+                    <button class="delete-ingredient" data-target="@final" data-id="@item.Id">Eliminar</button>
+                </div>
+                counter++;
+            }
+        </div>
+        <input type="hidden" name="OwnerId" value="@userManager.GetUserId(User)" />
+        <input type="hidden" name="OwnerName" value="@userManager.GetUserAsync(User).Result.Name" />
 
 
-
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
+        <div class="form-group">
+            <input type="submit" value="Save" class="btn btn-primary" />
+        </div>
+    </form>
 </div>
 
 
@@ -103,7 +101,7 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-<script>
+    <script>
 
         $(document).on('click', '.delete-ingredient', function (e) {
             e.preventDefault();
@@ -191,7 +189,7 @@
             body: JSON.stringify(formJson)
         })
             .catch(error => console.error('Unable to update item.', error));
-
+        window.location.href = '/Home/Recipe/' +@Model.Id + '?n=0'
     })
-</script>
+    </script>
 }
