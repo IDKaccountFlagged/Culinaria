@@ -25,10 +25,10 @@
     @foreach (var item in Model)
     {
     <div class="col-lg-3">
-        @if (User.Identity.IsAuthenticated & userManager.GetUserId(User) == item.OwnerId)
+        @if (User.Identity.IsAuthenticated & (userManager.GetUserId(User) == item.OwnerId | ViewBag.isAdmin))
         {
-            <a asp-action="Edit" asp-route-id="@item.Id">Editar</a>
-            <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+            <a class="add" asp-action="Edit" asp-route-id="@item.Id">Editar </a> 
+            <a class="delete" asp-action="Delete" asp-route-id="@item.Id">  Eliminar</a>
         }
 
         <a asp-action="Recipe" asp-route-id="@item.Id" class="card-recipe">

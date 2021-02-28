@@ -16,11 +16,18 @@
 
 <div class="container-fluid">
     <h1>@Html.DisplayFor(model => Model.Title)</h1>
+    @if ((User.Identity.IsAuthenticated & userManager.GetUserId(User) == Model.OwnerId) || User.IsInRole("Admin"))
+    {
+        <div>
+            <a class="add" asp-action="Edit" asp-route-id="@Model.Id">Editar</a> |
+            <a class="delete" asp-action="Delete" asp-route-id="@Model.Id">Eliminar</a>
+        </div>
+    }
     @*upper body of recipe*@
     <div class="row">
         <img src="@Model.Image" alt=@Html.DisplayFor(model => model.Title)>
     </div>
-    <div class="text-center">
+    <div class="text-center recipe-text">
         @Html.DisplayFor(model => Model.Description)
     </div>
     @*lower body of recipe*@
@@ -38,17 +45,11 @@
         </div>
         <div class="col-6">
             <h3>Preparação</h3>
-            <p id="prep">@Html.DisplayFor(model => Model.Prep)</p>
+            <p class="recipe-text">@Html.DisplayFor(model => Model.Prep)</p>
         </div>
     </div>
     <div>Feito por: @Model.OwnerName</div>
 </div>
 
 
-@if (User.Identity.IsAuthenticated & userManager.GetUserId(User) == Model.OwnerId)
-{
-    <div>
-        <a asp-action="Edit" asp-route-id="@Model.Id">Editar</a> |
-        <a asp-action="Delete" asp-route-id="@Model.Id">Eliminar</a>
-    </div>
-}
+

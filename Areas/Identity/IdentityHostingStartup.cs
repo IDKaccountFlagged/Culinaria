@@ -21,6 +21,7 @@ namespace Culinaria.Areas.Identity
                         context.Configuration.GetConnectionString("CulinariaContextConnection")));
 
                 services.AddDefaultIdentity<CulinariaUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                    .AddRoles<IdentityRole>()
                     .AddEntityFrameworkStores<CulinariaContext>();
             });
         }

@@ -59,7 +59,13 @@ namespace Culinaria.Controllers
                 }
 
             }
-            
+
+
+            if (User.Identity.IsAuthenticated)
+            {
+                ViewBag.isAdmin = IsAdmin().Result;
+            }
+
             return View(list);
         }
 
@@ -92,6 +98,11 @@ namespace Culinaria.Controllers
             if (recipe == null)
             {
                 return NotFound();
+            }
+
+            if (User.Identity.IsAuthenticated)
+            {
+                ViewBag.isAdmin = IsAdmin().Result;
             }
 
             return View(recipe);
@@ -170,6 +181,7 @@ namespace Culinaria.Controllers
         private async Task<bool> IsOwnerAsync(int recipeId)
         {
             var user = await _userManager.GetUserAsync(User);
+            var role = await _userManager.IsInRoleAsync(user, "Admin");
             string ownerId = null;
             using (var client = new HttpClient())
             {
@@ -185,7 +197,13 @@ namespace Culinaria.Controllers
                 }
             }
 
-            return user.Id == ownerId;
+            return user.Id == ownerId | role;
+        }
+
+        private async Task<bool> IsAdmin()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            return await _userManager.IsInRoleAsync(user, "Admin");
         }
     }
 }

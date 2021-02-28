@@ -1,3 +1,5 @@
+using Culinaria.Areas.Identity.Data;
+using Culinaria.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

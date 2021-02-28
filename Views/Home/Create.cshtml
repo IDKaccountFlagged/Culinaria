@@ -3,79 +3,81 @@
 @inject UserManager<Culinaria.Areas.Identity.Data.CulinariaUser> userManager
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Criar Nova Receita";
 }
 
-<h1>Create</h1>
+<h1>Criar Nova Receita</h1>
 
-<h4>Recipe</h4>
 <hr />
 <div>
+    <div id="alert"></div>
     <form id="form">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="form-group">
-            <label asp-for="Title" class="control-label">Titulo</label>
-            <input asp-for="Title" class="form-control" />
-            <span asp-validation-for="Title" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="Description" class="control-label">Descrição</label>
-            <textarea asp-for="Description" class="form-control"></textarea>
-            <span asp-validation-for="Description" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="Time" class="control-label">Tempo de Preparação</label>
-            <input asp-for="Time" class="form-control" />
-            <span asp-validation-for="Time" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="Quantity" class="control-label">Número de pessoas</label>
-            <input asp-for="Quantity" class="form-control" />
-            <span asp-validation-for="Quantity" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="Prep" class="control-label">Preparação</label>
-            <textarea asp-for="Prep" class="form-control"></textarea>
-            <span asp-validation-for="Prep" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="Image" class="control-label">Imagem</label>
-            <input asp-for="Image" class="form-control" />
-            <span asp-validation-for="Image" class="text-danger"></span>
-        </div>
-        <div class="form-group" id="ingredients">
-            <h4>Ingredientes</h4>
-            <a id="btnAddField" class="btn btn-primary add-ingredients">Adicionar novo ingrediente</a>
-            <div id="ingredient0">
-                <label class="control-label">Nome:</label>
-                <input type="text" name="ingredients" class="form-control" />
-                <a class="btn btn-primary remove-ingredient" data-target="ingredient0">Eliminar</a>
+        <div class="row">
+            <div class="col-6">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Title" class="control-label">Titulo</label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Description" class="control-label">Descrição</label>
+                    <textarea asp-for="Description" class="form-control"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Time" class="control-label">Tempo de Preparação</label>
+                    <input asp-for="Time" class="form-control" />
+                    <span asp-validation-for="Time" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Quantity" class="control-label">Número de pessoas</label>
+                    <input asp-for="Quantity" class="form-control" />
+                    <span asp-validation-for="Quantity" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Prep" class="control-label">Preparação</label>
+                    <textarea asp-for="Prep" class="form-control"></textarea>
+                    <span asp-validation-for="Prep" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Image" class="control-label">Imagem</label>
+                    <input asp-for="Image" class="form-control" />
+                    <span asp-validation-for="Image" class="text-danger"></span>
+                </div>
             </div>
+
+            <div class="form-group col-5" id="ingredients">
+                <div class="row">
+                    <h4 class="col-6">Ingredientes</h4>
+                    <a id="btnAddField" class="btn btn-primary add-ingredients col-5">Adicionar ingrediente</a>
+                </div>
+                <div id="ingredient0">
+                    <input type="text" name="ingredients" class="form-control" />
+                    <a class="btn btn-primary remove-ingredient" data-target="ingredient0">Eliminar</a>
+                </div>
+            </div>
+
 
         </div>
         <input type="hidden" name="OwnerId" value="@userManager.GetUserId(User)" />
         <input type="hidden" name="OwnerName" value="@userManager.GetUserAsync(User).Result.Name" />
-        <div class="form-group">
-            <input type="submit" value="Create" class="btn btn-primary" />
+        <div class="form-group row">
+            <input type="submit" value="Criar" class="btn btn-primary" />
         </div>
     </form>
-</div>
-
-<div>
-    <a asp-action="Index">Voltar para trás</a>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
-    <script>
+<script>
         var ingCounter = 1;
 
         $(document).on('click', '.add-ingredients', function (e) {
             e.preventDefault();
             $('#ingredients').append(
                 '<div id="ingredient' + ingCounter + '">' +
-                '<label class="control-label">Nome:</label>' +
                 '<input type="text" name="ingredients" class="form-control" />' +
                 '<a class="btn btn-primary remove-ingredient" data-target="ingredient' + ingCounter + '">Eliminar</a>' +
                 '</div>'
@@ -93,11 +95,12 @@
             e.preventDefault();
             const data = new FormData(e.target);
 
+            console.log(data);
+
             const formJson = Object.fromEntries(data.entries());
 
             var test = [];
             data.getAll('ingredients').forEach(value => {
-                console.log(value);
                 var ingData = {};
                 ingData["name"] = value;
                 test.push(ingData);
@@ -106,6 +109,8 @@
 
             formJson.ingredients = test;
 
+            console.log(formJson)
+
             fetch('https://localhost:44328/api/recipes', {
                 method: 'POST',
                 headers: {
@@ -113,12 +118,22 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(formJson)
-            })
+            }).then(result => {
+                    if (result.ok) {
+                        window.location.href = '/Home/Index?n=0'
+                    } else {
+                        $("#alert").append(
+                            '<div class="alert alert-success alert-dismissible" role="alert">'+
+                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>'+
+                            'Ocorreu um erro e não foi possível adicionar a receita'+
+                            '</div>')
+                    }
+                })
                 .catch(error => console.error('Unable to add item.', error));
 
-            window.location.href = '/Home/Index?n=0'
+
         })
-    </script>
+</script>
 
 }
 
